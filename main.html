@@ -1,28 +1,124 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
-	<link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        
+        div {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        #verification_heading {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        #verification_subtext {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .code-container {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .code {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .code:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+    </style>
 </head>
-
 <body>
-	<!-- the entire body must be written by student -->
-	<div>
-    <h1 id="verification_heading">Verify Your Account</h1>
-    <p id="verification_subtext">Please enter the OTP sent to your registered mobile number.</p>
-    <div class="code-container">
-        <input type="text" class="code" maxlength="1" id="code-1">
-        <input type="text" class="code" maxlength="1" id="code-2">
-        <input type="text" class="code" maxlength="1" id="code-3">
-        <input type="text" class="code" maxlength="1" id="code-4">
-        <input type="text" class="code" maxlength="1" id="code-5">
-        <input type="text" class="code" maxlength="1" id="code-6">
+    <!-- the entire body must be written by student -->
+    <div>
+        <h1 id="verification_heading">Verify Your Account</h1>
+        <p id="verification_subtext">Please enter the OTP sent to your registered mobile number.</p>
+        <div class="code-container">
+            <input type="text" class="code" maxlength="1" id="code-1">
+            <input type="text" class="code" maxlength="1" id="code-2">
+            <input type="text" class="code" maxlength="1" id="code-3">
+            <input type="text" class="code" maxlength="1" id="code-4">
+            <input type="text" class="code" maxlength="1" id="code-5">
+            <input type="text" class="code" maxlength="1" id="code-6">
+        </div>
     </div>
-</div>
-    <script type="text/javascript" src="./script.js">
-</script>
 
+    <script type="text/javascript">
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.code');
+            
+            // Focus the first input on page load
+            inputs[0].focus();
+            
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (event) => {
+                    // Only allow numeric input
+                    const value = event.target.value.replace(/[^0-9]/g, '');
+                    event.target.value = value;
+                    
+                    // Move to next input if current has value and not the last input
+                    if (value.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', (event) => {
+                    // Handle backspace to move to previous input
+                    if (event.key === 'Backspace' && input.value === '') {
+                        if (index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    }
+                    // Handle arrow keys for navigation
+                    else if (event.key === 'ArrowLeft' && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                    else if (event.key === 'ArrowRight' && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+                
+                // Handle paste functionality
+                input.addEventListener('paste', (event) => {
+                    event.preventDefault();
+                    const pastedData = event.clipboardData.getData('text').replace(/[^0-9]/g, '');
+                    
+                    for (let i = 0; i < pastedData.length && (index + i) < inputs.length; i++) {
+                        inputs[index + i].value = pastedData[i];
+                    }
+                    
+                    // Focus the next empty input or the last filled input
+                    const nextIndex = Math.min(index + pastedData.length, inputs.length - 1);
+                    inputs[nextIndex].focus();
+                });
+            });
+        });
+    </script>
 </body>
-
 </html>
